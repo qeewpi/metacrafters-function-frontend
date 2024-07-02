@@ -20,6 +20,15 @@ This smart contract enables users to add entries for medicines they have taken a
    cd SCM-Starter
    ```
 
+### Smart Contract Deployment
+
+1. **Deploying with Remix:**
+   - Open Remix IDE ([Remix Ethereum IDE](https://remix.ethereum.org/)).
+   - Create a new file `MedicineIntakeTracker.sol` and paste the smart contract code.
+   - Compile the smart contract using the Solidity compiler.
+   - Deploy the smart contract using the Deploy & Run Transactions plugin.
+   - Note down the deployed contract address for interaction in the frontend.
+
 ### Executing Program
 
 1. Install dependencies:
