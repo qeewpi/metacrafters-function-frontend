@@ -49,7 +49,7 @@ For any issues or questions, please [open an issue](<link to issue tracker>) her
 
 ## Authors
 
-- [Ashley Manalo]
+- Ashley Manalo
 
 ## License
 
