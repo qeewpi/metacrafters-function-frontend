@@ -1,70 +1,47 @@
-# Ethereum Counter DApp
+# Medicine Intake Tracker
+
+This project implements a Medicine Intake Tracker smart contract on the Ethereum blockchain, allowing users to record and retrieve details of their medicine intakes.
 
 ## Description
 
-This project demonstrates a decentralized application (DApp) built on Ethereum blockchain using Solidity smart contracts and React.js frontend. The DApp allows users to connect their MetaMask wallet, interact with a counter smart contract deployed on Ethereum test networks, view contract details, deposit funds, and withdraw funds.
+This smart contract enables users to add entries for medicines they have taken along with the timestamp of intake. It provides a simple interface to interact with the contract functions using a web frontend built with React and ethers.js.
 
-## Smart Contract Functions
-
-The smart contract deployed for this DApp includes the following functions:
-
-- **getBalance**: Returns the current balance of the smart contract.
-- **deposit**: Allows users to deposit ETH into the smart contract.
-- **withdraw**: Allows the owner to withdraw ETH from the smart contract.
-- **viewDetails**: Returns the owner's address and the current balance of the smart contract.
-
-## Frontend Features
+## Getting Started
 
 ### Installing
 
-After cloning the GitHub repository, follow these steps to get the code running on your computer:
-
-1. Inside the project directory, install dependencies:
-
-   ```bash
-   npm install
+1. Clone the repository:
+   ```
+   git clone https://github.com/qeewpi/metacrafters-function-frontend
    ```
 
-2. Open two additional terminals in your VS code.
-
-3. In the second terminal, start the Hardhat development network:
-
-   ```bash
-   npx hardhat node
+2. Navigate to the project directory:
    ```
-
-4. In the third terminal, deploy the smart contract to the local network:
-
-   ```bash
-   npx hardhat run --network localhost scripts/deploy.js
+   cd SCM-Starter
    ```
-
-5. Back in the first terminal, start the frontend development server:
-
-   ```bash
-   npm run dev
-   ```
-
-6. Open your browser and navigate to `http://localhost:3000` to view the application.
 
 ### Executing Program
 
-To use the Ethereum Counter DApp:
+1. Install dependencies:
+   ```
+   npm install
+   ```
 
-- Connect your MetaMask wallet to the DApp.
-- View the current contract balance stored on the smart contract.
-- Deposit funds by clicking the "Deposit" button.
-- Withdraw funds by clicking the "Withdraw" button (only available to the owner).
-- View contract details by clicking the "View Contract Details" button.
+2. Start the React development server:
+   ```
+   npm start
+   ```
+
+3. Access the application in your web browser at `http://localhost:3000`.
 
 ## Help
 
-For common problems or issues, please refer to the troubleshooting section in the README.md file.
+For any issues or questions, please [open an issue](<link to issue tracker>) here on GitHub.
 
 ## Authors
 
-- [Ashley Manalo](https://github.com/qeewpi)
+- [Ashley Manalo]
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
