@@ -1,154 +1,84 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import counter_abi from "../artifacts/contracts/Counter.sol/Counter.json";
+import Web3Modal from "web3modal";
+import MedicineTrackerABI from "/workspace/SCM-Starter/artifacts/contracts/MedicineIntakeTracker.sol/MedicineTrackerABI.json";
 
-export default function HomePage() {
-  const [ethWallet, setEthWallet] = useState(undefined);
-  const [account, setAccount] = useState(undefined);
-  const [counter, setCounter] = useState(undefined);
-  const [balance, setBalance] = useState(undefined);
-  const [details, setDetails] = useState(undefined);
+const contractAddress = "0x9D7f74d0C41E726EC95884E0e97Fa6129e3b5E99";
 
-  const contractAddress = "0xEf9f1ACE83dfbB8f559Da621f4aEA72C6EB10eBf";
-  const counterABI = counter_abi.abi;
+export default function Home() {
+    const [medicines, setMedicines] = useState([]);
+    const [newMedicine, setNewMedicine] = useState("");
+    const [intakeTime, setIntakeTime] = useState("");
+    const [error, setError] = useState(null);
 
-  const getWallet = async () => {
-    if (window.ethereum) {
-      setEthWallet(new ethers.providers.Web3Provider(window.ethereum));
-    }
-  };
+    useEffect(() => {
+        loadMedicines();
+    }, []);
 
-  const handleAccount = async () => {
-    if (ethWallet) {
-      const accounts = await ethWallet.listAccounts();
-      if (accounts.length > 0) {
-        setAccount(accounts[0]);
-      } else {
-        setAccount(undefined);
-      }
-    }
-  };
-
-  const connectAccount = async () => {
-    try {
-      if (!ethWallet) {
-        alert('MetaMask wallet is required to connect');
-        return;
-      }
-
-      const accounts = await ethWallet.send("eth_requestAccounts");
-      setAccount(accounts[0]);
-    } catch (error) {
-      console.error("Failed to connect MetaMask:", error);
-    }
-  };
-
-  const getCounterContract = () => {
-    if (ethWallet && account) {
-      const signer = ethWallet.getSigner();
-      const counterContract = new ethers.Contract(contractAddress, counterABI, signer);
-      setCounter(counterContract);
-    }
-  };
-
-  const getBalance = async () => {
-    try {
-      if (counter) {
-        const currentBalance = await counter.getBalance();
-        setBalance(ethers.utils.formatEther(currentBalance));
-      }
-    } catch (error) {
-      console.error("Error fetching balance:", error);
-    }
-  };
-
-  const deposit = async (amount) => {
-    try {
-      if (counter) {
-        const tx = await counter.deposit({ value: ethers.utils.parseEther(amount.toString()) });
-        await tx.wait();
-        getBalance();
-      }
-    } catch (error) {
-      console.error("Error depositing funds:", error);
-    }
-  };
-
-  const withdraw = async (amount) => {
-    try {
-      if (counter) {
-        const tx = await counter.withdraw(ethers.utils.parseEther(amount.toString()));
-        await tx.wait();
-        getBalance();
-      }
-    } catch (error) {
-      console.error("Error withdrawing funds:", error);
-    }
-  };
-
-  const viewDetails = async () => {
-    try {
-      if (counter) {
-        const details = await counter.viewDetails();
-        setDetails(details);
-      }
-    } catch (error) {
-      console.error("Error fetching details:", error);
-    }
-  };
-
-  const initUser = () => {
-    if (!ethWallet) {
-      return <p>Please install Metamask in order to use this application.</p>;
+    async function loadMedicines() {
+        try {
+            const web3Modal = new Web3Modal();
+            const connection = await web3Modal.connect();
+            const provider = new ethers.providers.Web3Provider(connection);
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(contractAddress, MedicineTrackerABI, signer);
+            const data = await contract.getIntakes();
+            console.log("Medicines:", data); // Log fetched data for debugging
+            setMedicines(data); // Update state with fetched data
+        } catch (error) {
+            console.error("Error loading medicines:", error);
+            setError(error.message); // Update state with error message
+        }
     }
 
-    if (!account) {
-      return <button onClick={connectAccount}>Please connect your Metamask wallet</button>;
+    async function addMedicine() {
+        try {
+            if (!newMedicine || !intakeTime) return;
+            const web3Modal = new Web3Modal();
+            const connection = await web3Modal.connect();
+            const provider = new ethers.providers.Web3Provider(connection);
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(contractAddress, MedicineTrackerABI, signer);
+            const transaction = await contract.addIntake(newMedicine, intakeTime);
+            await transaction.wait();
+            await loadMedicines(); // Ensure medicines are reloaded after adding
+        } catch (error) {
+            console.error("Error adding medicine:", error);
+            setError(error.message);
+        }
     }
 
-    if (balance === undefined) {
-      getBalance();
+    async function handleGetMedicines() {
+        try {
+            await loadMedicines();
+        } catch (error) {
+            console.error("Error getting medicines:", error);
+        }
     }
 
     return (
-      <div>
-        <p>Your Account: {account}</p>
-        <p>Contract Balance: {balance} ETH</p>
-        <button onClick={() => deposit(0.1)}>Deposit 0.1 ETH</button>
-        <button onClick={() => withdraw(0.05)}>Withdraw 0.05 ETH</button>
-        <button onClick={viewDetails}>View Contract Details</button>
-        {details && (
-          <div>
-            <p>Owner: {details[0]}</p>
-            <p>Contract Balance: {ethers.utils.formatEther(details[1])} ETH</p>
-          </div>
-        )}
-      </div>
+        <div>
+            <h1>Medicine Intake Tracker</h1>
+            <input 
+                type="text" 
+                value={newMedicine} 
+                onChange={(e) => setNewMedicine(e.target.value)} 
+                placeholder="Medicine Name" 
+            />
+            <input 
+                type="text" 
+                value={intakeTime} 
+                onChange={(e) => setIntakeTime(e.target.value)} 
+                placeholder="Intake Time (timestamp)" 
+            />
+            <button onClick={addMedicine}>Add Medicine</button>
+            <button onClick={handleGetMedicines}>Get Medicines</button>
+            {/* {error && <p>Error: {error}</p>}
+            <ul>
+                {medicines.map((medicine, index) => (
+                    <li key={index}>{medicine.medicineName} at {new Date(medicine.intakeTime * 1000).toLocaleString()}</li>
+                ))}
+            </ul> */}
+        </div>
     );
-  };
-
-  useEffect(() => {
-    getWallet();
-  }, []);
-
-  useEffect(() => {
-    handleAccount();
-  }, [ethWallet]);
-
-  useEffect(() => {
-    getCounterContract();
-  }, [account]);
-
-  return (
-    <main className="container">
-      <header><h1>Welcome to the Counter App!</h1></header>
-      {initUser()}
-      <style jsx>{`
-        .container {
-          text-align: center;
-        }
-      `}
-      </style>
-    </main>
-  );
 }
