@@ -29,7 +29,7 @@ This smart contract enables users to add entries for medicines they have taken a
 
 2. Start the React development server:
    ```
-   npm start
+   npm run dev
    ```
 
 3. Access the application in your web browser at `http://localhost:3000`.
